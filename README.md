@@ -2,6 +2,12 @@
 
 > A modern, end-to-end e-commerce web application engineered with **React 19**, **TypeScript**, **Tailwind CSS**, and **Zustand**. Designed as a portfolio-grade project for frontend developer CVs.
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?style=for-the-badge&logo=github)](https://parthsingh09.github.io/shopora-modern-ecommerce/)
+[![Repository](https://img.shields.io/badge/Repository-ParthSingh09-blue?style=for-the-badge&logo=github)](https://github.com/ParthSingh09/shopora-modern-ecommerce)
+[![Deploy with Vercel](https://img.shields.io/badge/Deploy%20with-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/ParthSingh09/shopora-modern-ecommerce)
+
+🔗 **Live Production URL**: [https://parthsingh09.github.io/shopora-modern-ecommerce/](https://parthsingh09.github.io/shopora-modern-ecommerce/)
+
 ---
 
 ## ⚡ Live Features
