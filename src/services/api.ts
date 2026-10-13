@@ -23,13 +23,11 @@ export const api = {
     // 1. Search Query
     if (filters.searchQuery && filters.searchQuery.trim() !== '') {
       const q = filters.searchQuery.toLowerCase().trim();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.brand.toLowerCase().includes(q) ||
-          p.colorway.toLowerCase().includes(q) ||
-          p.sku.toLowerCase().includes(q)
-      );
+      const terms = q.split(/\s+/).filter(Boolean);
+      result = result.filter((p) => {
+        const fullText = `${p.name} ${p.brand} ${p.colorway} ${p.sku} ${p.description} ${p.category}`.toLowerCase();
+        return terms.every((t) => fullText.includes(t));
+      });
     }
 
     // 2. Category
@@ -47,8 +45,23 @@ export const api = {
       result = result.filter((p) => p.inStock);
     }
 
-    // 5. Price Range
-    if (filters.priceRange) {
+    // 5. Price Bracket / Range
+    if (filters.priceBracket && filters.priceBracket !== 'all') {
+      switch (filters.priceBracket) {
+        case 'under-250':
+          result = result.filter((p) => p.price < 250);
+          break;
+        case '250-500':
+          result = result.filter((p) => p.price >= 250 && p.price <= 500);
+          break;
+        case '500-1000':
+          result = result.filter((p) => p.price > 500 && p.price <= 1000);
+          break;
+        case '1000-plus':
+          result = result.filter((p) => p.price > 1000);
+          break;
+      }
+    } else if (filters.priceRange) {
       const [min, max] = filters.priceRange;
       result = result.filter((p) => p.price >= min && p.price <= max);
     }

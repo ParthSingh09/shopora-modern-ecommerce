@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface BadgeProps {
-  variant?: 'grail' | 'limited' | 'sale' | 'out-of-stock' | 'verified' | 'neutral';
+  variant?: 'grail' | 'limited' | 'sale' | 'out-of-stock' | 'verified' | 'neutral' | 'demo';
   children: React.ReactNode;
   className?: string;
 }
@@ -11,23 +11,26 @@ export const Badge: React.FC<BadgeProps> = ({ variant = 'neutral', children, cla
 
   switch (variant) {
     case 'grail':
-      style = 'bg-shopora-accent/15 text-shopora-accent border-shopora-accent/40 font-semibold shadow-glow-accent';
+      style = 'bg-shopora-accent/15 text-shopora-accent border-shopora-accent/40 font-bold';
       break;
     case 'limited':
-      style = 'bg-shopora-crimson/15 text-shopora-crimson border-shopora-crimson/40 font-semibold shadow-glow-crimson';
+      style = 'bg-shopora-crimson/15 text-red-300 border-red-500/30 font-bold';
       break;
     case 'sale':
-      style = 'bg-amber-400/15 text-amber-300 border-amber-400/30 font-medium';
+      style = 'bg-amber-400/15 text-amber-300 border-amber-400/40 font-bold';
       break;
     case 'out-of-stock':
-      style = 'bg-red-950/50 text-red-400 border-red-800/40 line-through';
+      style = 'bg-red-950/60 text-red-300 border-red-800/60 line-through';
       break;
     case 'verified':
-      style = 'bg-cyan-950/60 text-shopora-cyan border-shopora-cyan/30 font-medium';
+      style = 'bg-cyan-950/60 text-shopora-cyan border-shopora-cyan/40 font-medium';
+      break;
+    case 'demo':
+      style = 'bg-blue-950/50 text-blue-300 border-blue-800/40 font-mono text-[11px]';
       break;
     case 'neutral':
     default:
-      style = 'bg-shopora-border/60 text-slate-300 border-shopora-border';
+      style = 'bg-shopora-surface text-slate-300 border-shopora-border';
       break;
   }
 

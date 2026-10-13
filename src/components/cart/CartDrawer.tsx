@@ -133,7 +133,7 @@ export const CartDrawer: React.FC = () => {
                 </div>
                 <div className="w-full h-1.5 bg-shopora-border rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-shopora-accent to-[#99CC00] transition-all duration-500 rounded-full shadow-glow-accent"
+                    className="h-full bg-shopora-accent transition-all duration-500 rounded-full"
                     style={{ width: `${percent}%` }}
                   />
                 </div>
@@ -253,14 +253,14 @@ export const CartDrawer: React.FC = () => {
                 <button
                   id="drawer-checkout-button"
                   onClick={handleCheckout}
-                  className="w-full py-3.5 rounded-xl bg-shopora-accent hover:bg-shopora-accentHover text-black font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-accent transition-all hover:scale-[1.01]"
+                  className="w-full py-3.5 rounded-xl bg-shopora-accent hover:bg-shopora-accentHover text-black font-display font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-transform hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-shopora-accent"
                 >
                   <span>Proceed to Checkout</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <button
                   onClick={handleViewCart}
-                  className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs tracking-wider uppercase transition-colors"
+                  className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs tracking-wider uppercase transition-colors focus-visible:ring-2 focus-visible:ring-shopora-accent"
                 >
                   View Full Bag &amp; Details
                 </button>
@@ -269,7 +269,7 @@ export const CartDrawer: React.FC = () => {
               {/* Authenticity Guarantee Note */}
               <div className="flex items-center justify-center gap-2 text-[11px] text-shopora-muted pt-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-shopora-accent" />
-                <span>Every pair physically verified deadstock before dispatch</span>
+                <span>All items checked and authenticated before dispatch</span>
               </div>
             </div>
           )}

@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, ShoppingBag, Check, Shield } from 'lucide-react';
+import { Eye, ArrowRight } from 'lucide-react';
 import { Product } from '../../types/product';
 import { Badge } from '../common/Badge';
 import { RatingStars } from '../common/RatingStars';
-import { useCartStore } from '../../store/useCartStore';
-import { useToastStore } from '../../store/useToastStore';
 
 interface ProductCardProps {
   product: Product;
@@ -14,66 +12,27 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<string>(
-    product.sizes.find((s) => (product.stockBySize[s] ?? 0) > 0) || product.sizes[0]
-  );
-  const [showSizePicker, setShowSizePicker] = useState(false);
-  const [isAdded, setIsAdded] = useState(false);
-
-  const { addToCart, setDrawerOpen } = useCartStore();
-  const { addToast } = useToastStore();
 
   const isOutOfStock = !product.inStock || Object.values(product.stockBySize).every((qty) => qty <= 0);
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (isOutOfStock) return;
-
-    if (!showSizePicker) {
-      setShowSizePicker(true);
-      return;
-    }
-
-    const res = addToCart(product, selectedSize);
-    if (res.success) {
-      setIsAdded(true);
-      addToast(res.message, 'success');
-      setTimeout(() => {
-        setIsAdded(false);
-        setShowSizePicker(false);
-      }, 1200);
-      setDrawerOpen(true);
-    } else {
-      addToast(res.message, 'error');
-    }
-  };
-
-  const handleSizeSelect = (size: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSelectedSize(size);
-  };
-
   return (
-    <div
-      className="group relative flex flex-col rounded-2xl bg-shopora-card border border-shopora-border hover:border-shopora-border/90 hover:shadow-card-elevated transition-all duration-300 overflow-hidden"
+    <article
+      className="group relative flex flex-col h-full rounded-2xl bg-shopora-card border border-shopora-border hover:border-shopora-borderLight transition-colors duration-200 overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setShowSizePicker(false);
-      }}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image Container */}
-      <div className="relative aspect-[4/3] sm:aspect-square w-full overflow-hidden bg-shopora-dark/80 flex items-center justify-center">
-        {/* Main & Secondary Image Transition */}
-        <Link to={`/product/${product.slug}`} className="w-full h-full block">
+      {/* Product Image Container */}
+      <div className="relative aspect-square w-full overflow-hidden bg-shopora-surface flex items-center justify-center">
+        <Link
+          to={`/product/${product.slug}`}
+          className="w-full h-full block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shopora-accent"
+          aria-label={`View details for ${product.name}`}
+        >
           <img
             src={isHovered && product.images[1] ? product.images[1] : product.images[0]}
-            alt={product.name}
-            className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${
-              isOutOfStock ? 'grayscale opacity-60' : ''
+            alt={`${product.name} - ${product.colorway}`}
+            className={`w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
+              isOutOfStock ? 'grayscale opacity-50' : ''
             }`}
             loading="lazy"
           />
@@ -86,7 +45,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
           ) : (
             <>
               {product.isGrail && <Badge variant="grail">Grail</Badge>}
-              {product.isLimitedDrop && <Badge variant="limited">Vault Drop</Badge>}
+              {product.isLimitedDrop && <Badge variant="limited">Vault Release</Badge>}
               {product.originalPrice && product.originalPrice > product.price && (
                 <Badge variant="sale">
                   Save ${product.originalPrice - product.price}
@@ -96,55 +55,46 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
           )}
         </div>
 
-        {/* Top Right Authenticity Tag */}
-        <div className="absolute top-3 right-3 z-10">
-          <span className="flex items-center gap-1 px-2 py-1 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300">
-            <Shield className="w-3 h-3 text-shopora-accent" />
-            Verified
-          </span>
-        </div>
-
-        {/* Quick View Button (Desktop overlay) */}
-        {onQuickView && (
+        {/* Quick View Button (hover / focus trigger) */}
+        {onQuickView && !isOutOfStock && (
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onQuickView(product);
-            }}
-            className="absolute bottom-3 right-3 z-10 p-2.5 rounded-xl bg-black/75 hover:bg-black text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-200 border border-white/10 shadow-lg hover:scale-105"
-            aria-label="Quick view product"
-            title="Quick Preview"
+            onClick={() => onQuickView(product)}
+            className="absolute bottom-3 right-3 z-10 p-2 rounded-xl bg-black/80 hover:bg-black text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity duration-200 border border-white/10 text-xs flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-shopora-accent"
+            aria-label={`Quick view ${product.name}`}
+            title="Quick view"
           >
-            <Eye className="w-4 h-4" />
+            <Eye className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline font-medium">Quick View</span>
           </button>
         )}
       </div>
 
       {/* Info Body */}
       <div className="flex flex-col flex-1 p-4 sm:p-5">
-        <div className="flex items-center justify-between text-xs text-shopora-muted mb-1.5">
-          <span className="font-semibold uppercase tracking-wider text-shopora-accent font-mono">
+        <div className="flex items-center justify-between text-xs text-shopora-muted mb-1 font-mono">
+          <span className="font-bold text-shopora-accent uppercase tracking-wider">
             {product.brand}
           </span>
-          <span className="font-mono text-[11px] text-shopora-muted">{product.sku}</span>
+          <span>{product.sku}</span>
         </div>
 
         {/* Title */}
-        <Link
-          to={`/product/${product.slug}`}
-          className="font-display font-bold text-sm sm:text-base text-white hover:text-shopora-accent transition-colors line-clamp-2 leading-snug mb-2"
-        >
-          {product.name}
-        </Link>
+        <h3 className="mb-1">
+          <Link
+            to={`/product/${product.slug}`}
+            className="font-display font-bold text-sm sm:text-base text-white hover:text-shopora-accent transition-colors line-clamp-2 leading-snug focus-visible:ring-2 focus-visible:ring-shopora-accent rounded"
+          >
+            {product.name}
+          </Link>
+        </h3>
 
         {/* Colorway */}
         <p className="text-xs text-shopora-muted truncate mb-3">
           {product.colorway}
         </p>
 
-        {/* Rating and Price row */}
-        <div className="mt-auto pt-3 border-t border-shopora-border/40 flex items-center justify-between">
+        {/* Rating and Price row - Pushed to bottom */}
+        <div className="mt-auto pt-3 border-t border-shopora-border/60 flex items-center justify-between gap-2">
           <div>
             <RatingStars rating={product.rating} reviewCount={product.reviewCount} />
             <div className="flex items-baseline gap-2 mt-1">
@@ -159,73 +109,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
             </div>
           </div>
 
-          {/* Add to Bag or Out of Stock Button */}
+          {/* Action Button */}
           {isOutOfStock ? (
             <button
               disabled
-              className="px-3.5 py-2 rounded-xl bg-white/5 border border-white/5 text-slate-500 text-xs font-semibold uppercase cursor-not-allowed"
+              className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-slate-500 text-xs font-semibold uppercase cursor-not-allowed select-none"
+              aria-label="Sold out"
             >
               Sold Out
             </button>
           ) : (
-            <button
-              onClick={handleQuickAdd}
-              className={`p-2.5 sm:px-3 sm:py-2 rounded-xl font-semibold text-xs tracking-wider uppercase transition-all flex items-center gap-1.5 ${
-                isAdded
-                  ? 'bg-shopora-accent text-black shadow-glow-accent'
-                  : 'bg-white/10 hover:bg-shopora-accent hover:text-black text-white hover:shadow-glow-accent'
-              }`}
-              aria-label={`Add ${product.name} to bag`}
+            <Link
+              to={`/product/${product.slug}`}
+              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-shopora-surface hover:bg-shopora-accent hover:text-black text-white border border-shopora-border hover:border-shopora-accent font-semibold text-xs tracking-wider uppercase transition-all flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-shopora-accent"
+              aria-label={`View details and select size for ${product.name}`}
             >
-              {isAdded ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  <span className="hidden sm:inline">Locked</span>
-                </>
-              ) : (
-                <>
-                  <ShoppingBag className="w-4 h-4" />
-                  <span className="hidden sm:inline">{showSizePicker ? 'Confirm' : 'Add'}</span>
-                </>
-              )}
-            </button>
+              <span className="hidden sm:inline">Details</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           )}
         </div>
-
-        {/* Expandable Size Selector Drawer inside card on Quick Add */}
-        {showSizePicker && !isOutOfStock && (
-          <div className="mt-3 pt-3 border-t border-shopora-border animate-fade-in">
-            <div className="flex items-center justify-between text-[11px] text-shopora-muted mb-1.5">
-              <span>Select Size:</span>
-              <span className="text-shopora-accent font-mono font-bold">{selectedSize}</span>
-            </div>
-            <div className="grid grid-cols-4 gap-1">
-              {product.sizes.map((s) => {
-                const stock = product.stockBySize[s] ?? 0;
-                const isAvailable = stock > 0;
-                const isSelected = selectedSize === s;
-
-                return (
-                  <button
-                    key={s}
-                    disabled={!isAvailable}
-                    onClick={(e) => handleSizeSelect(s, e)}
-                    className={`py-1 text-[11px] font-mono rounded border transition-colors ${
-                      isSelected
-                        ? 'bg-shopora-accent text-black border-shopora-accent font-bold'
-                        : isAvailable
-                        ? 'bg-shopora-dark text-slate-300 border-shopora-border hover:border-slate-400'
-                        : 'bg-transparent text-slate-600 border-white/5 line-through cursor-not-allowed'
-                    }`}
-                  >
-                    {s.replace('US ', '')}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+    </article>
   );
 };

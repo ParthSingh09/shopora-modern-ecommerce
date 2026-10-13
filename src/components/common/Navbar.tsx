@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, X, Flame, Shield, ArrowRight } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, ArrowRight } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 
 export const Navbar: React.FC = () => {
@@ -22,7 +22,7 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on page transition
+  // Close mobile menu and search on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setSearchOpen(false);
@@ -38,172 +38,176 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { label: 'All Drops', path: '/shop' },
-    { label: 'Grails', path: '/shop?category=retro-high' },
+    { label: 'Retro Highs', path: '/shop?category=retro-high' },
     { label: 'Collabs', path: '/shop?category=collabs' },
     { label: 'Low Runners', path: '/shop?category=low-runners' },
     { label: 'Lookbook', path: '/lookbook' },
   ];
 
   return (
-    <header
-      className={`sticky top-0 z-40 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-[#0A0B0E]/95 backdrop-blur-md border-b border-shopora-border/80 shadow-2xl py-3.5'
-          : 'bg-[#0A0B0E]/80 backdrop-blur-sm border-b border-shopora-border/40 py-5'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
-          
-          {/* Logo */}
-          <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2 group focus:outline-none">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#CCFF00] to-[#99CC00] flex items-center justify-center shadow-glow-accent group-hover:scale-105 transition-transform">
-                <span className="font-display font-black text-black text-xl leading-none tracking-tighter">S</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display font-black text-2xl tracking-tighter text-white uppercase group-hover:text-shopora-accent transition-colors">
-                  SHOPORA<span className="text-shopora-accent font-mono text-sm ml-0.5">®</span>
-                </span>
-                <span className="text-[9px] uppercase tracking-widest text-shopora-muted -mt-1 font-mono">
-                  Street Culture &amp; Vault
-                </span>
-              </div>
-            </Link>
+    <>
+      {/* Accessible Skip to Content Link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 z-50 px-4 py-2 bg-shopora-accent text-black font-bold rounded-lg shadow-lg"
+      >
+        Skip to main content
+      </a>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1 lg:gap-2">
-              {navLinks.map((link) => {
-                const isActive = location.pathname + location.search === link.path;
-                return (
-                  <Link
-                    key={link.label}
-                    to={link.path}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      isActive
-                        ? 'text-shopora-accent bg-shopora-accent/10 font-semibold'
-                        : 'text-slate-300 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Right Action Icons */}
-          <div className="flex items-center gap-3">
-            {/* Desktop Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="hidden sm:flex relative items-center">
-              <input
-                type="text"
-                placeholder="Search grails, Travis, Dunks..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-48 lg:w-64 pl-9 pr-3 py-2 bg-shopora-card/90 border border-shopora-border rounded-xl text-xs text-slate-100 placeholder:text-shopora-muted focus:outline-none focus:border-shopora-accent/80 focus:w-72 transition-all"
-              />
-              <Search className="w-4 h-4 text-shopora-muted absolute left-3 pointer-events-none" />
-            </form>
-
-            {/* Mobile Search Toggle */}
-            <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="sm:hidden p-2 text-slate-300 hover:text-white rounded-lg hover:bg-white/5"
-              aria-label="Search"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-
-            {/* Authenticity Guarantee Link */}
-            <Link
-              to="/lookbook"
-              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-shopora-border/60 bg-shopora-card text-xs text-slate-300 hover:text-shopora-accent hover:border-shopora-accent/40 transition-colors"
-              title="Learn about Shopora multi-point authentication"
-            >
-              <Shield className="w-3.5 h-3.5 text-shopora-accent" />
-              <span>Vault Certified</span>
-            </Link>
-
-            {/* Cart Button */}
-            <button
-              id="navbar-cart-button"
-              onClick={toggleDrawer}
-              className="relative p-2.5 rounded-xl bg-shopora-card border border-shopora-border hover:border-shopora-accent/50 text-slate-100 hover:text-shopora-accent transition-all group flex items-center gap-2"
-              aria-label={`Open shopping bag with ${itemCount} items`}
-            >
-              <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              <span className="hidden sm:inline-block text-xs font-semibold tracking-wider font-mono">
-                BAG
-              </span>
-              {itemCount > 0 && (
-                <span className="inline-flex items-center justify-center px-1.5 py-0.5 min-w-[20px] h-5 rounded-full bg-shopora-accent text-black font-mono font-bold text-xs shadow-glow-accent animate-scale-in">
-                  {itemCount}
-                </span>
-              )}
-            </button>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-300 hover:text-white rounded-lg hover:bg-white/5"
-              aria-label="Toggle navigation menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Search Expandable Bar */}
-        {searchOpen && (
-          <form onSubmit={handleSearchSubmit} className="sm:hidden mt-3 relative">
-            <input
-              type="text"
-              placeholder="Search sneakers, Jordan, Yeezy..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              autoFocus
-              className="w-full pl-10 pr-10 py-2.5 bg-shopora-card border border-shopora-accent/60 rounded-xl text-sm text-slate-100 focus:outline-none"
-            />
-            <Search className="w-4 h-4 text-shopora-accent absolute left-3 top-3.5" />
-            <button
-              type="button"
-              onClick={() => setSearchOpen(false)}
-              className="absolute right-3 top-3 text-shopora-muted"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </form>
-        )}
-
-        {/* Mobile Slide-down Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-shopora-border space-y-2 animate-fade-in">
-            {navLinks.map((link) => (
+      <header
+        className={`sticky top-0 z-40 transition-colors duration-200 ${
+          isScrolled
+            ? 'bg-[#0B0C0E]/95 backdrop-blur-md border-b border-shopora-border py-3 shadow-card'
+            : 'bg-[#0B0C0E]/90 backdrop-blur-sm border-b border-shopora-border/60 py-4'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-4">
+            
+            {/* Logo */}
+            <div className="flex items-center gap-8">
               <Link
-                key={link.label}
-                to={link.path}
-                className="flex items-center justify-between px-3 py-2.5 rounded-xl text-base font-medium text-slate-200 hover:text-shopora-accent hover:bg-white/5 transition-colors"
+                to="/"
+                className="flex items-center gap-2.5 group focus-visible:ring-2 focus-visible:ring-shopora-accent rounded-lg"
+                aria-label="Shopora Home"
               >
-                <span>{link.label}</span>
-                <ArrowRight className="w-4 h-4 text-shopora-muted" />
+                <div className="w-8 h-8 rounded-lg bg-shopora-accent flex items-center justify-center font-display font-black text-black text-lg transition-transform group-hover:scale-105">
+                  S
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-display font-black text-xl tracking-tight text-white uppercase group-hover:text-shopora-accent transition-colors leading-none">
+                    SHOPORA<span className="text-shopora-accent font-mono text-xs ml-0.5">®</span>
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wider text-shopora-muted font-mono mt-0.5">
+                    Sneaker Archive
+                  </span>
+                </div>
               </Link>
-            ))}
-            <div className="pt-2 border-t border-shopora-border/60">
-              <Link
-                to="/cart"
-                className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-shopora-accent/10 border border-shopora-accent/30 text-shopora-accent font-semibold"
+
+              {/* Desktop Navigation */}
+              <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-1">
+                {navLinks.map((link) => {
+                  const isActive = location.pathname + location.search === link.path;
+                  return (
+                    <Link
+                      key={link.label}
+                      to={link.path}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${
+                        isActive
+                          ? 'text-shopora-accent bg-shopora-accent/10 font-bold'
+                          : 'text-slate-300 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Right Action Icons */}
+            <div className="flex items-center gap-2.5">
+              {/* Desktop Search Bar */}
+              <form onSubmit={handleSearchSubmit} className="hidden sm:flex relative items-center" role="search">
+                <input
+                  type="search"
+                  placeholder="Search drops, models, SKU..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search sneaker collection"
+                  className="w-48 lg:w-60 pl-8 pr-3 py-2 bg-shopora-surface border border-shopora-border rounded-xl text-xs text-white placeholder:text-shopora-muted focus:outline-none focus:border-shopora-accent focus:w-72 transition-all"
+                />
+                <Search className="w-3.5 h-3.5 text-shopora-muted absolute left-2.5 pointer-events-none" />
+              </form>
+
+              {/* Mobile Search Toggle */}
+              <button
+                onClick={() => setSearchOpen(!searchOpen)}
+                className="sm:hidden p-2 text-slate-300 hover:text-white rounded-lg hover:bg-white/5"
+                aria-label="Open search bar"
               >
-                <span className="flex items-center gap-2">
-                  <Flame className="w-4 h-4" />
-                  View Bag &amp; Checkout
+                <Search className="w-5 h-5" />
+              </button>
+
+              {/* Cart Button */}
+              <button
+                id="navbar-cart-button"
+                onClick={toggleDrawer}
+                className="relative p-2.5 rounded-xl bg-shopora-surface border border-shopora-border hover:border-shopora-borderLight text-slate-100 hover:text-shopora-accent transition-all flex items-center gap-2"
+                aria-label={`Open shopping bag with ${itemCount} items`}
+              >
+                <ShoppingBag className="w-4 h-4" />
+                <span className="hidden sm:inline-block text-xs font-mono font-semibold tracking-wider">
+                  BAG
                 </span>
-                <span className="font-mono">{itemCount} items</span>
-              </Link>
+                {itemCount > 0 && (
+                  <span className="inline-flex items-center justify-center px-1.5 py-0.5 min-w-[18px] h-[18px] rounded-full bg-shopora-accent text-black font-mono font-black text-[11px] leading-none">
+                    {itemCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-slate-300 hover:text-white rounded-lg hover:bg-white/5"
+                aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
           </div>
-        )}
-      </div>
-    </header>
+
+          {/* Mobile Search Bar Expansion */}
+          {searchOpen && (
+            <form onSubmit={handleSearchSubmit} className="sm:hidden mt-3 relative" role="search">
+              <input
+                type="search"
+                placeholder="Search sneakers, Jordan, Yeezy..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+                className="w-full pl-9 pr-9 py-2 bg-shopora-surface border border-shopora-accent rounded-xl text-xs text-white focus:outline-none"
+              />
+              <Search className="w-3.5 h-3.5 text-shopora-accent absolute left-3 top-3" />
+              <button
+                type="button"
+                onClick={() => setSearchOpen(false)}
+                className="absolute right-3 top-2.5 text-shopora-muted"
+                aria-label="Close search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </form>
+          )}
+
+          {/* Mobile Navigation Drawer */}
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-3 pt-3 border-t border-shopora-border space-y-1 animate-fade-in">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.path}
+                  className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-slate-200 hover:text-shopora-accent hover:bg-white/5 transition-colors"
+                >
+                  <span>{link.label}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-shopora-muted" />
+                </Link>
+              ))}
+              <div className="pt-2 border-t border-shopora-border/60">
+                <Link
+                  to="/cart"
+                  className="flex items-center justify-between px-3 py-2 rounded-lg bg-shopora-surface border border-shopora-border text-shopora-accent text-xs font-bold uppercase tracking-wider"
+                >
+                  <span>View Full Bag</span>
+                  <span className="font-mono">{itemCount} items</span>
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+    </>
   );
 };

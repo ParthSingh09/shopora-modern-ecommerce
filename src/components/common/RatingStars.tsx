@@ -11,8 +11,11 @@ export const RatingStars: React.FC<RatingStarsProps> = ({ rating, reviewCount, s
   const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4';
 
   return (
-    <div className="inline-flex items-center gap-1.5 text-xs text-shopora-muted">
-      <div className="flex items-center text-amber-400">
+    <div
+      className="inline-flex items-center gap-1.5 text-xs text-shopora-muted"
+      aria-label={`Rating: ${rating.toFixed(1)} out of 5 stars${reviewCount ? `, based on ${reviewCount} reviews` : ''}`}
+    >
+      <div className="flex items-center text-amber-400" aria-hidden="true">
         {[1, 2, 3, 4, 5].map((index) => {
           const isFilled = rating >= index;
           const isHalf = !isFilled && rating >= index - 0.5;

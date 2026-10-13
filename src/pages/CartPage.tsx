@@ -74,7 +74,7 @@ export const CartPage: React.FC = () => {
         </p>
         <Link
           to="/shop"
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-shopora-accent hover:bg-shopora-accentHover text-black font-display font-bold text-xs uppercase tracking-wider shadow-glow-accent transition-all hover:scale-105"
+          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-shopora-accent hover:bg-shopora-accentHover text-black font-display font-bold text-xs uppercase tracking-wider transition-transform hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-shopora-accent"
         >
           <span>Explore All Drops</span>
           <ArrowRight className="w-4 h-4" />
@@ -121,7 +121,7 @@ export const CartPage: React.FC = () => {
             </div>
             <div className="w-full h-2 bg-shopora-dark rounded-full overflow-hidden border border-shopora-border/50">
               <div
-                className="h-full bg-shopora-accent rounded-full transition-all duration-500 shadow-glow-accent"
+                className="h-full bg-shopora-accent rounded-full transition-all duration-500"
                 style={{ width: `${percent}%` }}
               />
             </div>
@@ -238,9 +238,9 @@ export const CartPage: React.FC = () => {
           <button
             id="proceed-to-checkout-button"
             onClick={() => navigate('/checkout')}
-            className="w-full py-4 rounded-xl bg-shopora-accent hover:bg-shopora-accentHover text-black font-display font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-accent transition-all hover:scale-[1.01]"
+            className="w-full py-4 rounded-xl bg-shopora-accent hover:bg-shopora-accentHover text-black font-display font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-transform hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-shopora-accent"
           >
-            <span>Proceed to Secure Checkout</span>
+            <span>Proceed to Checkout</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 
@@ -248,7 +248,7 @@ export const CartPage: React.FC = () => {
           <div className="p-3 rounded-xl bg-shopora-dark/60 border border-shopora-border text-[11px] text-shopora-muted flex items-start gap-2.5">
             <ShieldCheck className="w-4 h-4 text-shopora-accent shrink-0 mt-0.5" />
             <p>
-              Your order is protected by the Shopora 100% Deadstock Guarantee. In-hand authentication before courier handoff.
+              Your order is protected by the Shopora Guarantee. Every sneaker is inspected for quality and authenticity before dispatch.
             </p>
           </div>
         </div>

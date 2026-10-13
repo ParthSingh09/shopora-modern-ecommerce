@@ -64,10 +64,18 @@ export type SortOption =
   | 'rating-desc'
   | 'newest';
 
+export type PriceBracket = 
+  | 'all'
+  | 'under-250'
+  | '250-500'
+  | '500-1000'
+  | '1000-plus';
+
 export interface FilterState {
   searchQuery: string;
   category: ProductCategory;
   brand: ProductBrand | 'all';
+  priceBracket: PriceBracket;
   priceRange: [number, number];
   onlyInStock: boolean;
   sortBy: SortOption;

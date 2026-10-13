@@ -9,35 +9,36 @@ export default {
     extend: {
       colors: {
         shopora: {
-          dark: '#0A0B0E',
-          card: '#13151B',
-          cardHover: '#181B23',
-          border: '#242834',
-          accent: '#CCFF00', // Volt yellow-green signature street accent
-          accentHover: '#B8E600',
-          crimson: '#FF3366',
+          dark: '#0B0C0E',
+          surface: '#111318',
+          card: '#16181F',
+          cardHover: '#1C202A',
+          border: '#272B38',
+          borderLight: '#373D4F',
+          accent: '#CCFF00', // Signature Volt
+          accentHover: '#B5E300',
+          accentDark: '#1E2600',
+          crimson: '#FF3B30',
           cyan: '#00F0FF',
-          muted: '#8E95A5',
-          light: '#F8F9FA'
+          muted: '#94A3B8', // High-contrast WCAG AA accessible muted text
+          text: '#F8FAFC',
+          light: '#F8FAFC'
         }
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['"Space Grotesk"', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
       },
       boxShadow: {
-        'glow-accent': '0 0 25px -5px rgba(204, 255, 0, 0.35)',
-        'glow-crimson': '0 0 25px -5px rgba(255, 51, 102, 0.35)',
-        'card-elevated': '0 10px 30px -10px rgba(0, 0, 0, 0.5)',
+        'card': '0 4px 20px -2px rgba(0, 0, 0, 0.5)',
+        'elevated': '0 10px 30px -5px rgba(0, 0, 0, 0.6)',
+        'accent-ring': '0 0 0 2px #CCFF00',
       },
       keyframes: {
         'fade-in': {
-          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '0%': { opacity: '0', transform: 'translateY(6px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        'scale-in': {
-          '0%': { opacity: '0', transform: 'scale(0.95)' },
-          '100%': { opacity: '1', transform: 'scale(1)' },
         },
         'marquee': {
           '0%': { transform: 'translateX(0%)' },
@@ -45,9 +46,8 @@ export default {
         }
       },
       animation: {
-        'fade-in': 'fade-in 0.4s ease-out forwards',
-        'scale-in': 'scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'marquee': 'marquee 25s linear infinite',
+        'fade-in': 'fade-in 0.25s ease-out forwards',
+        'marquee': 'marquee 30s linear infinite',
       }
     },
   },
