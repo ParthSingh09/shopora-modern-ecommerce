@@ -26,8 +26,13 @@ function ScrollToTop() {
 }
 
 export const App: React.FC = () => {
+  const basename =
+    typeof window !== 'undefined' && window.location.pathname.startsWith('/shopora-modern-ecommerce')
+      ? '/shopora-modern-ecommerce'
+      : undefined;
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <ScrollToTop />
       <div className="min-h-screen bg-[#0A0B0E] text-slate-100 flex flex-col font-sans selection:bg-[#CCFF00] selection:text-black">
         {/* Floating notifications */}
