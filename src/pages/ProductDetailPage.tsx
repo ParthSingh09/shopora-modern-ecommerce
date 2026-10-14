@@ -26,8 +26,10 @@ import { useToastStore } from '../store/useToastStore';
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Tagged with the id it was loaded for, so loading is derived rather than toggled
+  const [loaded, setLoaded] = useState<{ id: string; product: Product | null } | null>(null);
+  const product = loaded?.product ?? null;
+  const loading = loaded?.id !== id;
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [sizeError, setSizeError] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -47,11 +49,10 @@ export const ProductDetailPage: React.FC = () => {
   useEffect(() => {
     if (!id) return;
     let isMounted = true;
-    setLoading(true);
 
     api.getProductById(id).then((p) => {
       if (!isMounted) return;
-      setProduct(p);
+      setLoaded({ id, product: p });
       if (p) {
         // Find first in-stock size if available
         const firstInStock = p.sizes.find((s) => (p.stockBySize[s] ?? 0) > 0) || '';
@@ -66,7 +67,6 @@ export const ProductDetailPage: React.FC = () => {
           setRelatedProducts(res.products.filter((item) => item.id !== p.id).slice(0, 3));
         });
       }
-      setLoading(false);
     });
 
     window.scrollTo({ top: 0, behavior: 'smooth' });

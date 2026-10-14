@@ -10,8 +10,8 @@ import { AlertCircle, RotateCcw } from 'lucide-react';
 export const ShopPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Results are tagged with the query they belong to, so loading is derived rather than toggled
+  const [results, setResults] = useState<{ key: string; products: Product[] } | null>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   // The URL is the single source of truth for filters
@@ -29,22 +29,23 @@ export const ShopPage: React.FC = () => {
     };
   }, [searchKey]);
 
+  const loading = results?.key !== searchKey;
+  const products = results?.products ?? [];
+
   // Fetch products whenever filters change
   useEffect(() => {
     let isMounted = true;
-    setLoading(true);
 
     api.getProducts(filters).then((res) => {
       if (isMounted) {
-        setProducts(res.products);
-        setLoading(false);
+        setResults({ key: searchKey, products: res.products });
       }
     });
 
     return () => {
       isMounted = false;
     };
-  }, [filters]);
+  }, [filters, searchKey]);
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
     const updated = { ...filters, ...newFilters };
