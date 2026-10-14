@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useToastStore } from '../../store/useToastStore';
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -162,7 +164,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Credits */}
         <div className="mt-14 pt-8 border-t border-shopora-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-shopora-muted">
-          <p>© {new Date().getFullYear()} SHOPORA VAULT INC. All rights reserved.</p>
+          <p>© {CURRENT_YEAR} SHOPORA VAULT INC. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <span className="font-mono text-[11px] px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-slate-300">
               Built with React • TypeScript • Tailwind CSS • Zustand

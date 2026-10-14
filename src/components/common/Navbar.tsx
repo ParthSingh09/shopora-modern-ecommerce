@@ -23,10 +23,12 @@ export const Navbar: React.FC = () => {
   }, []);
 
   // Close mobile menu and search on route change
-  useEffect(() => {
+  const [lastPathname, setLastPathname] = useState(location.pathname);
+  if (location.pathname !== lastPathname) {
+    setLastPathname(location.pathname);
     setMobileMenuOpen(false);
     setSearchOpen(false);
-  }, [location.pathname]);
+  }
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
