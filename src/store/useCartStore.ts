@@ -7,6 +7,13 @@ export const FREE_SHIPPING_THRESHOLD = 250;
 export const STANDARD_SHIPPING_RATE = 15;
 export const ESTIMATED_TAX_RATE = 0.08; // 8%
 
+const subtotalOf = (items: CartItem[]) =>
+  items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+// A coupon stays applied only while the bag still meets its minimum order value
+const eligibleCoupon = (coupon: Coupon | null, items: CartItem[]) =>
+  coupon && subtotalOf(items) >= (coupon.minOrderValue ?? 0) ? coupon : null;
+
 interface CartStoreState {
   items: CartItem[];
   appliedCoupon: Coupon | null;
@@ -86,7 +93,8 @@ export const useCartStore = create<CartStoreState>()(
       },
 
       removeFromCart: (cartItemId) => {
-        set({ items: get().items.filter((i) => i.id !== cartItemId) });
+        const items = get().items.filter((i) => i.id !== cartItemId);
+        set({ items, appliedCoupon: eligibleCoupon(get().appliedCoupon, items) });
       },
 
       updateQuantity: (cartItemId, newQuantity) => {
@@ -98,7 +106,7 @@ export const useCartStore = create<CartStoreState>()(
           return { success: true, message: 'Item removed from bag.' };
         }
 
-        const maxAvailable = item.product.stockBySize[item.size] ?? 10;
+        const maxAvailable = item.product.stockBySize[item.size] ?? 0;
         if (newQuantity > maxAvailable) {
           return {
             success: false,
@@ -106,11 +114,10 @@ export const useCartStore = create<CartStoreState>()(
           };
         }
 
-        set({
-          items: get().items.map((i) =>
-            i.id === cartItemId ? { ...i, quantity: newQuantity } : i
-          ),
-        });
+        const items = get().items.map((i) =>
+          i.id === cartItemId ? { ...i, quantity: newQuantity } : i
+        );
+        set({ items, appliedCoupon: eligibleCoupon(get().appliedCoupon, items) });
 
         return { success: true };
       },
@@ -140,12 +147,12 @@ export const useCartStore = create<CartStoreState>()(
       },
 
       getSubtotal: () => {
-        return get().items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+        return subtotalOf(get().items);
       },
 
       getDiscount: () => {
         const subtotal = get().getSubtotal();
-        const coupon = get().appliedCoupon;
+        const coupon = eligibleCoupon(get().appliedCoupon, get().items);
         if (!coupon) return 0;
 
         if (coupon.discountPercent) {
@@ -162,7 +169,7 @@ export const useCartStore = create<CartStoreState>()(
         if (subtotal === 0) return 0;
         if (subtotal >= FREE_SHIPPING_THRESHOLD) return 0;
         // Check if FREESHIP coupon applied
-        if (get().appliedCoupon?.code === 'FREESHIP') return 0;
+        if (eligibleCoupon(get().appliedCoupon, get().items)?.code === 'FREESHIP') return 0;
         return STANDARD_SHIPPING_RATE;
       },
 

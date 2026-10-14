@@ -46,9 +46,11 @@ export const ProductDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
+    let isMounted = true;
     setLoading(true);
 
     api.getProductById(id).then((p) => {
+      if (!isMounted) return;
       setProduct(p);
       if (p) {
         // Find first in-stock size if available
@@ -60,6 +62,7 @@ export const ProductDetailPage: React.FC = () => {
 
         // Fetch related products
         api.getProducts({ category: p.category }).then((res) => {
+          if (!isMounted) return;
           setRelatedProducts(res.products.filter((item) => item.id !== p.id).slice(0, 3));
         });
       }
@@ -67,6 +70,10 @@ export const ProductDetailPage: React.FC = () => {
     });
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   if (loading) {

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCartStore } from '../store/useCartStore';
 import { Product } from '../types/product';
+import { VALID_COUPONS } from '../data/products';
 
 const mockProduct: Product = {
   id: 'test-01',
@@ -97,5 +98,36 @@ describe('useCartStore', () => {
     const state = useCartStore.getState();
     expect(state.getSubtotal()).toBe(100);
     expect(state.getShipping()).toBe(15);
+  });
+
+  it('FREESHIP waives shipping without also discounting the subtotal', () => {
+    const cheapProduct = { ...mockProduct, price: 100 };
+    useCartStore.getState().addToCart(cheapProduct, 'US 9');
+    const freeship = VALID_COUPONS.find((c) => c.code === 'FREESHIP')!;
+    useCartStore.getState().applyCoupon(freeship);
+
+    const state = useCartStore.getState();
+    expect(state.getDiscount()).toBe(0);
+    expect(state.getShipping()).toBe(0);
+    expect(state.getTotal()).toBe(108); // 100 + 8% tax
+  });
+
+  it('drops a coupon once the bag falls below its minimum order value', () => {
+    const cheapProduct = { ...mockProduct, id: 'test-02', price: 100 };
+    useCartStore.getState().addToCart(mockProduct, 'US 9'); // 400
+    useCartStore.getState().addToCart(cheapProduct, 'US 9'); // 500 total
+    useCartStore.getState().applyCoupon({
+      code: 'GRAIL50',
+      discountAmount: 50,
+      description: '$50 off orders over $400',
+      minOrderValue: 400,
+    });
+    expect(useCartStore.getState().getDiscount()).toBe(50);
+
+    useCartStore.getState().removeFromCart(`${mockProduct.id}-US 9-Chicago Red`);
+
+    const state = useCartStore.getState();
+    expect(state.appliedCoupon).toBeNull();
+    expect(state.getDiscount()).toBe(0);
   });
 });

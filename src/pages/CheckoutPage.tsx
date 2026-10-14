@@ -99,7 +99,7 @@ export const CheckoutPage: React.FC = () => {
       country: 'United States',
     });
     setCardNumber('4242 4242 4242 4242');
-    setExpiry('12/28');
+    setExpiry(`12/${String((new Date().getFullYear() + 2) % 100).padStart(2, '0')}`);
     setCvv('123');
     setErrors({});
     addToast('Demo shipping and test payment details filled!', 'info');
@@ -160,8 +160,16 @@ export const CheckoutPage: React.FC = () => {
         newErrors.cardNumber = 'Enter a valid 15-16 digit test card number.';
       }
 
-      if (!expiry || !expiry.includes('/') || expiry.length !== 5) {
+      const expiryMatch = /^(\d{2})\/(\d{2})$/.exec(expiry);
+      const expMonth = expiryMatch ? Number(expiryMatch[1]) : 0;
+      if (!expiryMatch || expMonth < 1 || expMonth > 12) {
         newErrors.expiry = 'MM/YY required.';
+      } else {
+        // Card is valid through the last day of its expiry month
+        const expYear = 2000 + Number(expiryMatch[2]);
+        if (new Date(expYear, expMonth, 1) <= new Date()) {
+          newErrors.expiry = 'Card has expired.';
+        }
       }
 
       if (!cvv || cvv.length < 3) {

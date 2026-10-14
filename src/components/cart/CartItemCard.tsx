@@ -15,7 +15,7 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({ item, onCloseDrawer 
   const { addToast } = useToastStore();
   const { product, size, color, quantity } = item;
 
-  const maxStock = product.stockBySize[size] ?? 10;
+  const maxStock = product.stockBySize[size] ?? 0;
 
   const handleIncrement = () => {
     if (quantity >= maxStock) {

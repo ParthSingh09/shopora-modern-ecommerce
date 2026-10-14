@@ -15,6 +15,11 @@ interface QuickViewModalProps {
 export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose }) => {
   if (!product) return null;
 
+  // Keyed by product so size/image selection resets when a different product opens
+  return <QuickViewContent key={product.id} product={product} onClose={onClose} />;
+};
+
+const QuickViewContent: React.FC<{ product: Product; onClose: () => void }> = ({ product, onClose }) => {
   const [selectedSize, setSelectedSize] = useState<string>(
     product.sizes.find((s) => (product.stockBySize[s] ?? 0) > 0) || product.sizes[0]
   );
