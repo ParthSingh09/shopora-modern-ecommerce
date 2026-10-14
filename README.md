@@ -31,7 +31,7 @@
 - **Slide-Over Bag Drawer**: Access bag contents anywhere from the header without page reloads.
 - **Dedicated Full Bag View**: Itemized table with quantity increments, decrements, and removal.
 - **Automatic Calculations**: Dynamic subtotal, promotional discounts, estimated tax (8%), and free shipping progress meter.
-- **Promo Coupon System**: Validates codes like `STREET20` (20% off) and `GRAIL50` ($50 off orders over $400) with minimum threshold checks.
+- **Promo Coupon System**: Validates codes like `STREET20` (20% off), `GRAIL50` ($50 off orders over $400), and `FREESHIP` (free shipping) with minimum threshold checks. Coupons are removed automatically if the bag drops below their minimum.
 - **Persistent LocalStorage**: Powered by Zustand `persist` middleware—your bag survives page reloads, browser restarts, and tab closures.
 
 ### 4. Checkout & Order Processing (`/checkout`)
@@ -75,10 +75,14 @@ Tests cover:
 - Discount coupon math and free shipping thresholds
 - API filtering, keyword search, and minimum order rules
 - ProductCard component rendering, ratings, and sold-out button disablement
+- Coupon eligibility when the bag changes, and the FREESHIP shipping waiver
+- QuickViewModal opening, closing, and switching products
 
 ---
 
 ## 🚀 Getting Started Locally
+
+Requires **Node.js 20.19+ or 22.12+** (see `.nvmrc`; run `nvm use` if you use nvm).
 
 ```bash
 # Install dependencies
@@ -89,6 +93,9 @@ npm run dev
 
 # Run test suite
 npm test
+
+# Lint
+npm run lint
 
 # Build production bundle
 npm run build
