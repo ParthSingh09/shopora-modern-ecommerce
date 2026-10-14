@@ -569,7 +569,6 @@ export const VALID_COUPONS = [
   },
   {
     code: 'FREESHIP',
-    discountAmount: 15,
     description: 'Free expedited armored shipping',
     minOrderValue: 0,
   }

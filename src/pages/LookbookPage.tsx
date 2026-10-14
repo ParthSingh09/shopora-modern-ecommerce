@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Flame, ArrowRight, CheckCircle2, Eye, Sparkles } from 'lucide-react';
+import { ShieldCheck, Flame, ArrowRight } from 'lucide-react';
 
 export const LookbookPage: React.FC = () => {
   return (

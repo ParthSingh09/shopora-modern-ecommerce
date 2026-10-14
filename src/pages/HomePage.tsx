@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShoppingBag, Terminal, CheckCircle2, Star, Sparkles } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Terminal } from 'lucide-react';
 import { ProductCard } from '../components/product/ProductCard';
 import { QuickViewModal } from '../components/product/QuickViewModal';
 import { Product } from '../types/product';

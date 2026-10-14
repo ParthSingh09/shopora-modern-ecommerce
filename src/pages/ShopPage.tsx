@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Product, FilterState, ProductCategory, ProductBrand, SortOption, PriceBracket } from '../types/product';
 import { api } from '../services/api';
@@ -14,36 +14,20 @@ export const ShopPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
-  // Initialize filter state from search params
-  const categoryParam = (searchParams.get('category') as ProductCategory) || 'all';
-  const brandParam = (searchParams.get('brand') as ProductBrand | 'all') || 'all';
-  const priceParam = (searchParams.get('price') as PriceBracket) || 'all';
-  const queryParam = searchParams.get('q') || '';
-  const sortParam = (searchParams.get('sort') as SortOption) || 'featured';
-  const inStockParam = searchParams.get('inStock') === 'true';
-
-  const [filters, setFilters] = useState<FilterState>({
-    searchQuery: queryParam,
-    category: categoryParam,
-    brand: brandParam,
-    priceBracket: priceParam,
-    priceRange: [0, 5000],
-    onlyInStock: inStockParam,
-    sortBy: sortParam,
-  });
-
-  // Sync state with URL params
-  useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      category: ((searchParams.get('category') as ProductCategory) || 'all'),
-      brand: ((searchParams.get('brand') as ProductBrand | 'all') || 'all'),
-      priceBracket: ((searchParams.get('price') as PriceBracket) || 'all'),
-      searchQuery: searchParams.get('q') || '',
-      sortBy: ((searchParams.get('sort') as SortOption) || 'featured'),
-      onlyInStock: searchParams.get('inStock') === 'true',
-    }));
-  }, [searchParams]);
+  // The URL is the single source of truth for filters
+  const searchKey = searchParams.toString();
+  const filters = useMemo<FilterState>(() => {
+    const params = new URLSearchParams(searchKey);
+    return {
+      searchQuery: params.get('q') || '',
+      category: (params.get('category') as ProductCategory) || 'all',
+      brand: (params.get('brand') as ProductBrand | 'all') || 'all',
+      priceBracket: (params.get('price') as PriceBracket) || 'all',
+      priceRange: [0, 5000],
+      onlyInStock: params.get('inStock') === 'true',
+      sortBy: (params.get('sort') as SortOption) || 'featured',
+    };
+  }, [searchKey]);
 
   // Fetch products whenever filters change
   useEffect(() => {
@@ -64,7 +48,6 @@ export const ShopPage: React.FC = () => {
 
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
     const updated = { ...filters, ...newFilters };
-    setFilters(updated);
 
     // Update URL query parameters
     const params = new URLSearchParams();
@@ -79,16 +62,6 @@ export const ShopPage: React.FC = () => {
   };
 
   const handleReset = () => {
-    const resetState: FilterState = {
-      searchQuery: '',
-      category: 'all',
-      brand: 'all',
-      priceBracket: 'all',
-      priceRange: [0, 5000],
-      onlyInStock: false,
-      sortBy: 'featured',
-    };
-    setFilters(resetState);
     setSearchParams({}, { replace: true });
   };
 

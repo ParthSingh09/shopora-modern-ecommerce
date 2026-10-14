@@ -9,7 +9,6 @@ import {
   Printer,
   ArrowRight,
   QrCode,
-  Calendar,
   Lock,
 } from 'lucide-react';
 import { Order } from '../types/order';
@@ -20,25 +19,30 @@ export const OrderSuccessPage: React.FC = () => {
   const orderId = searchParams.get('orderId');
 
   const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(orderId));
 
   useEffect(() => {
-    // Launch celebratory confetti burst
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#CCFF00', '#00F0FF', '#FF3366', '#FFFFFF'],
+    if (!orderId) return;
+
+    let isMounted = true;
+    api.getOrder(orderId).then((found) => {
+      if (!isMounted) return;
+      setOrder(found);
+      setLoading(false);
+      if (found) {
+        // Launch celebratory confetti burst
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#CCFF00', '#00F0FF', '#FF3366', '#FFFFFF'],
+        });
+      }
     });
 
-    if (orderId) {
-      api.getOrder(orderId).then((found) => {
-        setOrder(found);
-        setLoading(false);
-      });
-    } else {
-      setLoading(false);
-    }
+    return () => {
+      isMounted = false;
+    };
   }, [orderId]);
 
   const handlePrint = () => {
@@ -49,6 +53,23 @@ export const OrderSuccessPage: React.FC = () => {
     return (
       <div className="max-w-3xl mx-auto px-4 py-24 text-center">
         <p className="text-shopora-muted">Retrieving order verification...</p>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-24 text-center" id="main-content">
+        <h1 className="text-2xl font-display font-bold text-white uppercase">Order Not Found</h1>
+        <p className="text-sm text-shopora-muted mt-2 mb-6">
+          We couldn't find a demo order{orderId ? ` with reference ${orderId}` : ''} in this browser.
+        </p>
+        <Link
+          to="/shop"
+          className="px-6 py-3 rounded-xl bg-shopora-accent text-black font-bold uppercase text-xs tracking-wider"
+        >
+          Explore Drops
+        </Link>
       </div>
     );
   }
@@ -75,7 +96,7 @@ export const OrderSuccessPage: React.FC = () => {
 
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-shopora-card border border-shopora-border text-xs font-mono">
           <span className="text-shopora-muted">ORDER REFERENCE:</span>
-          <span className="text-shopora-accent font-bold print:text-black">{orderId || '#SHP-DEMO-892410'}</span>
+          <span className="text-shopora-accent font-bold print:text-black">{order.orderId}</span>
         </div>
       </div>
 
@@ -92,7 +113,7 @@ export const OrderSuccessPage: React.FC = () => {
                 SIMULATED ORDER RECEIPT
               </h2>
               <p className="text-xs text-shopora-muted font-mono">
-                DEMO SLIP ID: {order?.verificationBadgeId || 'DEMO-AUTH-74X92Q'}
+                DEMO SLIP ID: {order.verificationBadgeId}
               </p>
             </div>
           </div>
@@ -145,88 +166,84 @@ export const OrderSuccessPage: React.FC = () => {
         </div>
 
         {/* Ordered Items Table */}
-        {order && (
-          <div className="space-y-3">
-            <h3 className="font-display font-bold text-xs uppercase tracking-wider text-slate-300">
-              ACQUIRED DEADSTOCK PAIRS
-            </h3>
-            <div className="divide-y divide-shopora-border/60 rounded-2xl border border-shopora-border bg-shopora-dark/50 overflow-hidden">
-              {order.items.map((item) => (
-                <div key={item.id} className="p-4 flex items-center justify-between gap-4 text-xs">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={item.product.images[0]}
-                      alt={item.product.name}
-                      className="w-14 h-14 object-cover rounded-xl bg-shopora-card border border-shopora-border"
-                    />
-                    <div>
-                      <h4 className="font-bold text-white text-sm print:text-black">
-                        {item.product.name}
-                      </h4>
-                      <p className="text-shopora-muted font-mono mt-0.5">
-                        Size: {item.size} • Color: {item.color} • Qty: {item.quantity}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right font-mono font-bold text-sm text-white print:text-black">
-                    ${(item.product.price * item.quantity).toLocaleString()}
+        <div className="space-y-3">
+          <h3 className="font-display font-bold text-xs uppercase tracking-wider text-slate-300">
+            ACQUIRED DEADSTOCK PAIRS
+          </h3>
+          <div className="divide-y divide-shopora-border/60 rounded-2xl border border-shopora-border bg-shopora-dark/50 overflow-hidden">
+            {order.items.map((item) => (
+              <div key={item.id} className="p-4 flex items-center justify-between gap-4 text-xs">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={item.product.images[0]}
+                    alt={item.product.name}
+                    className="w-14 h-14 object-cover rounded-xl bg-shopora-card border border-shopora-border"
+                  />
+                  <div>
+                    <h4 className="font-bold text-white text-sm print:text-black">
+                      {item.product.name}
+                    </h4>
+                    <p className="text-shopora-muted font-mono mt-0.5">
+                      Size: {item.size} • Color: {item.color} • Qty: {item.quantity}
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
+                <div className="text-right font-mono font-bold text-sm text-white print:text-black">
+                  ${(item.product.price * item.quantity).toLocaleString()}
+                </div>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
 
         {/* Shipping Destination & Cost Breakdown */}
-        {order && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-            {/* Address */}
-            <div className="p-4 rounded-2xl bg-shopora-dark/60 border border-shopora-border text-xs space-y-2">
-              <h4 className="font-mono font-bold text-shopora-accent uppercase">
-                DELIVERY DESTINATION
-              </h4>
-              <p className="font-semibold text-white print:text-black">{order.shippingAddress.fullName}</p>
-              <p className="text-slate-300">{order.shippingAddress.addressLine1}</p>
-              <p className="text-slate-300">
-                {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
-              </p>
-              <p className="text-shopora-muted mt-1">{order.shippingAddress.email}</p>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+          {/* Address */}
+          <div className="p-4 rounded-2xl bg-shopora-dark/60 border border-shopora-border text-xs space-y-2">
+            <h4 className="font-mono font-bold text-shopora-accent uppercase">
+              DELIVERY DESTINATION
+            </h4>
+            <p className="font-semibold text-white print:text-black">{order.shippingAddress.fullName}</p>
+            <p className="text-slate-300">{order.shippingAddress.addressLine1}</p>
+            <p className="text-slate-300">
+              {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
+            </p>
+            <p className="text-shopora-muted mt-1">{order.shippingAddress.email}</p>
+          </div>
 
-            {/* Financials */}
-            <div className="p-4 rounded-2xl bg-shopora-dark/60 border border-shopora-border text-xs space-y-1.5">
-              <h4 className="font-mono font-bold text-shopora-accent uppercase">
-                SETTLEMENT SUMMARY
-              </h4>
-              <div className="flex justify-between text-slate-300">
-                <span>Subtotal</span>
-                <span className="font-mono text-white">${order.subtotal.toLocaleString()}</span>
+          {/* Financials */}
+          <div className="p-4 rounded-2xl bg-shopora-dark/60 border border-shopora-border text-xs space-y-1.5">
+            <h4 className="font-mono font-bold text-shopora-accent uppercase">
+              SETTLEMENT SUMMARY
+            </h4>
+            <div className="flex justify-between text-slate-300">
+              <span>Subtotal</span>
+              <span className="font-mono text-white">${order.subtotal.toLocaleString()}</span>
+            </div>
+            {order.discount > 0 && (
+              <div className="flex justify-between text-shopora-accent">
+                <span>Discount</span>
+                <span className="font-mono">-${order.discount.toLocaleString()}</span>
               </div>
-              {order.discount > 0 && (
-                <div className="flex justify-between text-shopora-accent">
-                  <span>Discount</span>
-                  <span className="font-mono">-${order.discount.toLocaleString()}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-slate-300">
-                <span>Shipping ({order.shippingOption.id})</span>
-                <span className="font-mono text-white">
-                  {order.shippingCost === 0 ? 'FREE' : `$${order.shippingCost}`}
-                </span>
-              </div>
-              <div className="flex justify-between text-slate-300">
-                <span>Sales Tax</span>
-                <span className="font-mono text-white">${order.tax.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between pt-2 border-t border-shopora-border font-bold text-white text-sm">
-                <span>Total Simulated Amount</span>
-                <span className="font-mono text-shopora-accent text-base">
-                  ${order.total.toLocaleString()}
-                </span>
-              </div>
+            )}
+            <div className="flex justify-between text-slate-300">
+              <span>Shipping ({order.shippingOption.id})</span>
+              <span className="font-mono text-white">
+                {order.shippingCost === 0 ? 'FREE' : `$${order.shippingCost}`}
+              </span>
+            </div>
+            <div className="flex justify-between text-slate-300">
+              <span>Sales Tax</span>
+              <span className="font-mono text-white">${order.tax.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between pt-2 border-t border-shopora-border font-bold text-white text-sm">
+              <span>Total Simulated Amount</span>
+              <span className="font-mono text-shopora-accent text-base">
+                ${order.total.toLocaleString()}
+              </span>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Portfolio Demo Notice */}
         <div className="p-4 rounded-xl bg-shopora-dark/80 border border-shopora-border text-xs text-shopora-muted flex items-start gap-3 print:hidden">
